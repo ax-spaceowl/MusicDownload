@@ -13,6 +13,8 @@ from PyQt6.QtWidgets import (
     QTextEdit,
     QFileDialog,
 )
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtCore import QUrl
 
 from src.config import DEFAULT_CONFIG_PATH, load_config, save_config
 from src.downloader import DownloadWorker
@@ -52,9 +54,12 @@ class MainWindow(QMainWindow):
         self.folder_input.setPlaceholderText("选择或输入下载目录")
         self.folder_button = QPushButton("选择目录")
         self.folder_button.clicked.connect(self.select_download_folder)
+        self.open_folder_button = QPushButton("打开下载目录")
+        self.open_folder_button.clicked.connect(self.open_download_folder)
         folder_layout.addWidget(folder_label)
         folder_layout.addWidget(self.folder_input)
         folder_layout.addWidget(self.folder_button)
+        folder_layout.addWidget(self.open_folder_button)
 
         self.download_button = QPushButton("下载并提取 AAC")
         self.download_button.clicked.connect(self.start_download)
@@ -98,6 +103,17 @@ class MainWindow(QMainWindow):
             self.config["download_root"] = selected
             save_config(self.config)
             self.log_output.append(f"已保存默认下载目录: {selected}")
+
+    def open_download_folder(self) -> None:
+        path = self.folder_input.text().strip() or self.config.get("download_root", "")
+        if not path:
+            QMessageBox.warning(self, "提示", "未配置下载目录")
+            return
+        p = Path(path)
+        if not p.exists():
+            QMessageBox.warning(self, "提示", "下载目录不存在: " + str(p))
+            return
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(p)))
 
     def start_download(self) -> None:
         url = self.url_input.text().strip()
