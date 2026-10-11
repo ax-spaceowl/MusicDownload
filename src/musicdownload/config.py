@@ -3,8 +3,18 @@ from pathlib import Path
 
 DEFAULT_CONFIG_DIR = Path.home() / "Documents" / "SpaceOwl" / "musicdownload"
 DEFAULT_CONFIG_PATH = DEFAULT_CONFIG_DIR / "config.json"
+
+# 工程内的资源位置（src/musicdownload/config.py -> 工程根目录/resources）
+PACKAGE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = PACKAGE_DIR.parent.parent
+RESOURCE_DIR = PROJECT_ROOT / "resources"
+ICON_PATH = RESOURCE_DIR / "icon.svg"
+
 DEFAULT_CONFIG = {
     "download_root": str(DEFAULT_CONFIG_DIR),
+    "check_updates_on_startup": True,
+    "auto_open_trim": True,
+    "download_mode": "video_and_audio",
 }
 
 
@@ -20,8 +30,8 @@ def load_config() -> dict:
                 data = json.load(handle)
             if not isinstance(data, dict):
                 raise ValueError
-            if "download_root" not in data:
-                data["download_root"] = str(DEFAULT_CONFIG_DIR)
+            for key, value in DEFAULT_CONFIG.items():
+                data.setdefault(key, value)
             return data
         except Exception:
             return DEFAULT_CONFIG.copy()

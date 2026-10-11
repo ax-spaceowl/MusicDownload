@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 打包与构建产物
+build/
+dist/
+
+# macOS
+.DS_Store
+
+# 运行时输出（默认下载目录为 ~/Documents/SpaceOwl/musicdownload）
+audios/
+videos/
